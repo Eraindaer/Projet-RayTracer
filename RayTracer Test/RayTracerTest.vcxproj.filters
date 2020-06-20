@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="RayTracerTest.cpp" />
+    <ClCompile Include="source\Renderer.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Engine.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Service.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ServiceConfig.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Scene.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ServiceMgr.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Sphere.cpp">
+      <Filter>source\Renderer_utils</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Ray.cpp">
+      <Filter>source\Renderer_utils</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Object3d.cpp">
+      <Filter>source\Renderer_utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\FileUtils.cpp">
+      <Filter>source\File_utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Camera.cpp">
+      <Filter>source\Renderer_utils</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Light.cpp">
+      <Filter>source\Renderer_utils</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Cube.cpp">
+      <Filter>source\Renderer_utils</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="source">
+      <UniqueIdentifier>{c92519f1-8b83-496d-b83c-7f6a1158e902}</UniqueIdentifier>
+      <Extensions>D:\Music\bur\Cour\test tech\RayTracerTest\RayTracerTest\source</Extensions>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{1c6fce6f-1012-4a8a-a2cb-9c924a3dcfbd}</UniqueIdentifier>
+      <Extensions>D:\Music\bur\Cour\test tech\RayTracerTest\RayTracerTest\include</Extensions>
+    </Filter>
+    <Filter Include="include\Renderer_utils">
+      <UniqueIdentifier>{2cf30051-0710-46b0-a99a-a345ed714401}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\Renderer_utils">
+      <UniqueIdentifier>{5a4d2782-28a6-44fc-a822-b0efc8ec353e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\FIle_utils">
+      <UniqueIdentifier>{7f04fdff-bfaf-43db-97e4-a4be7bae1222}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\File_utils">
+      <UniqueIdentifier>{35eaff3d-6e76-41e0-bf6d-c69fb6251563}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Renderer.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ServiceMgr.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Scene.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ServiceConfig.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Service.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Cube.h">
+      <Filter>include\Renderer_utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Object3d.h">
+      <Filter>include\Renderer_utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Ray.h">
+      <Filter>include\Renderer_utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Plane.h">
+      <Filter>include\Renderer_utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Sphere.h">
+      <Filter>include\Renderer_utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FileUtils.h">
+      <Filter>include\FIle_utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Camera.h">
+      <Filter>include\Renderer_utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Light.h">
+      <Filter>include\Renderer_utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Engine.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

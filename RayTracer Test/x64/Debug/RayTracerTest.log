@@ -1,0 +1,4 @@
+﻿  Renderer.cpp
+c:\users\blekn\onedrive\bureau\my raytracer\raytracertest\raytracertest\include\scene.h(36): warning C4267: 'return' : conversion de 'size_t' en 'int', perte possible de données
+c:\users\blekn\onedrive\bureau\my raytracer\raytracertest\raytracertest\include\scene.h(37): warning C4267: 'return' : conversion de 'size_t' en 'int', perte possible de données
+  RayTracerTest.vcxproj -> C:\Users\blekn\OneDrive\Bureau\my raytracer\RayTracerTest\x64\Debug\RayTracerTest.exe
