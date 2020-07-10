@@ -9,7 +9,6 @@
 #include <math.h>
 #include <iostream>
 
-glm::vec4 color_final;
 Renderer::Renderer(int w, int h, int d)
 {
 	_Width = w;
@@ -31,79 +30,90 @@ glm::vec3  GetReflective(glm::vec3 IncidenceDir, glm::vec3 Normal)
 
 Solid3d *	Renderer::CalculateNeareastIntersect(Scene *  sce, Ray  * ToTest)
 {
-	Solid3d* ptr = nullptr;
-	for (auto i = 0; i < sce->GetObjectsSize(); i++) {
-		if (sce->GetSolidObject(i)->Hit(ToTest) == true) {
+	Solid3d * ptr = nullptr;
+	for (auto i = 0; i < sce->GetObjectsSize(); ++i) {
+		if (sce->GetSolidObject(i)->Hit(ToTest)) {
 			ptr = sce->GetSolidObject(i);
+			break;
 		}
 	}
 	return ptr;
-}
-
-glm::vec4 Renderer::CalculateReflectRay(Scene *  sce, Solid3d *  Origin, Ray *  Previous, int CurDepth)
-{
-	glm::vec3 normalLightRay = Previous->GetNormaltHit();
-	glm::vec3 incidenceDir = Previous->GetInvDir();
-	Ray lightRay(Previous->GetHit(), GetReflective(incidenceDir, normalLightRay));
-
-	color_final.r += Origin->GetReflective().r;
-	color_final.g += Origin->GetReflective().g;
-	color_final.b += Origin->GetReflective().b;
-	color_final.a += Origin->GetReflective().a;
-
-	return color_final;
 
 }
 
-glm::vec4 Renderer::CalculateRay(Scene *  sce, Solid3d *  Origin, Ray *  Previous, int CurDepth)
+glm::vec4 Renderer::CalculateReflectRay(Scene *  sce, Solid3d *  Origin, Ray  * Previous, int CurDepth)
 {
-	//color_final = { 0,0,0,0 };
-
-	glm::vec3 normal = Previous->GetHit() - Origin->GetPosition();
-	float temp = glm::dot(normal, normal);
-	if (temp == 0.0f) {
-		return color_final;
+	glm::vec4 color_final;
+	Ray reflectiveRay = GetReflective(Previous->GetDirection(), Previous->GetNormalHit());
+	float angle = glm::dot(reflectiveRay.GetDirection(), Previous->GetNormalHit());
+	if ((angle < 0) || (CurDepth == 0)) {
+		color_final += Origin->GetEmissive();
 	}
-	temp = 1.0f / sqrtf(temp);
-	normal = temp * normal;
 
-	for (int j = 0; j < sce->GetLightSize(); ++j) {
-		auto light = sce->GetLight(j);
-		glm::vec3 dist = light->GetPosition() - Previous->GetHit();
-		
-		if (glm::dot(normal, dist) <= 0.0f) {
-			continue;
-		}
-		float t = sqrtf(glm::dot(dist, dist));
-		if (t <= 0.0f) {
-			continue;
-		}
-		Ray lightRay(Previous->GetHit(), (1/t) * dist);
+	else {
+		color_final += CalculateRay(sce, Origin, Previous, ++CurDepth) * Origin->GetReflective();
+	}
+	return color_final;
+}
 
-		bool inShadow = false;
-		for (int k = 0; k < sce->GetObjectsSize(); ++k) {
-			if (Origin->Hit(&lightRay) == true) {
-				inShadow = true;
+glm::vec4 Renderer::CalculateRay(Scene *  sce, Solid3d *  Origin, Ray  * Previous, int CurDepth)
+{
+	///Initialisation de la couleur, du statut d'ombre, de la normale et normalisation de la normale du point d'impact
+	glm::vec4 color_final = Origin->GetMaterial();
+	glm::vec3 normal = Previous->GetNormalHit();
+
+	normal = glm::normalize(normal);
+	bool hit = false;
+
+	///L'ensemble des lumières est parcouru pour appliquer la couleur à la surface (ou non)
+	for (auto i = 0; i < sce->GetLightSize(); ++i) {
+		///Définition du rayon partant du point d'impact jusqu'à la position de la lumière
+		Ray lightRay = (sce->GetLight(i)->GetPosition() - Previous->GetHit(), Previous->GetHit());
+
+		///L'ensemble des solides de la scène est parcouru pour vérifier si un objet est entre la surface à vérifier et la lumière en question
+		for (auto j = 0; j < sce->GetObjectsSize(); ++j) {
+			if ((sce->GetSolidObject(j)->Hit(&lightRay)) && 
+				(sce->GetSolidObject(j) != Origin) && 
+				(glm::distance(sce->GetSolidObject(j)->GetPosition(), sce->GetLight(i)->GetPosition()) < glm::distance(sce->GetSolidObject(j)->GetPosition(), sce->GetLight(i)->GetPosition()))) {
+				hit = true;
 				break;
+			}	
+		}
+		///La surface est éclairée
+		if ((hit == false) && (glm::dot(normal, lightRay.GetDirection()) <= 0)) {
+			///Methode 1
+			float dist = glm::length(lightRay.GetDirection()) * glm::length(normal);
+			float coef = (1 / dist) * glm::dot(lightRay.GetDirection(), normal);
+			///Méthode 2
+			//float coef = glm::abs(glm::dot(normal, lightRay.GetDirection()));
+			///Méthode 3
+			//float coef = 1.0f;
+
+			color_final.r *= coef * sce->GetLight(i)->GetColor().r;
+			color_final.g *= coef * sce->GetLight(i)->GetColor().g;
+			color_final.b *= coef * sce->GetLight(i)->GetColor().b;
+		}
+		else {
+			color_final = Origin->GetEmissive();
+		}
+
+
+		/*for (auto j = 0; j < sce->GetObjectsSize(); ++j) {
+			if ((sce->GetSolidObject(j) != Origin) && //Si l'objet de la scène est différent du pointeur ET
+				(sce->GetSolidObject(j)->Hit(&lightRay) == true) && //Si la lumière éclaire cet objet ET 
+				(glm::distance(lightRay.GetHit(), Previous->GetHit()) < glm::distance(Previous->GetHit(), sce->GetLight(j)->GetPosition()))) { //Si la distance entre le point d'impact du rayon et le point d'impact de la lumière est inférieure à la distance entre le point d'impact du rayon et la position de la lumière
+				lightRay.SetNormalHit(Previous->GetNormalHit());
+				Ray reflectiveRay = GetReflective(Previous->GetDirection(), Previous->GetNormalHit());
+				float angle = glm::dot(reflectiveRay.GetDirection(), Previous->GetNormalHit());
+				/*if ((angle < 0) || (CurDepth == 5)) {
+					color_final = Origin->GetEmissive();
+				}
+
+				else {
+					color_final *= CalculateRay(sce, Origin, &reflectiveRay, ++CurDepth) * Origin->GetReflective();
+				}
 			}
-		}
-		
-		if (inShadow == false) {
-			float magnCamRay = sqrtf(sce->GetCamera()->GetFocus().x * sce->GetCamera()->GetFocus().x +
-									 sce->GetCamera()->GetFocus().y * sce->GetCamera()->GetFocus().y + 
-									 sce->GetCamera()->GetFocus().z * sce->GetCamera()->GetFocus().z);
-			float magnLightRay = sqrtf(lightRay.GetDirection().x* lightRay.GetDirection().x +
-									   lightRay.GetDirection().y* lightRay.GetDirection().y +
-									   lightRay.GetDirection().z* lightRay.GetDirection().z);
-			float lambert = (1 / t) * glm::dot(glm::normalize(dist), normal);
-			float facingRatio = glm::dot(sce->GetCamera()->GetFocus(), lightRay.GetDirection()) / magnCamRay*magnLightRay;
-			//color_final = CalculateReflectRay(sce, Origin, &lightRay, CurDepth + 1);
-			color_final.r += lambert * light->GetColor().r * Origin->GetMaterial().r;
-			color_final.g += lambert * light->GetColor().g * Origin->GetMaterial().g;
-			color_final.b += lambert * light->GetColor().b * Origin->GetMaterial().b;
-			color_final.a += lambert * light->GetColor().a * Origin->GetMaterial().a;
-			color_final *= facingRatio;
-		}
+		}*/
 	}
 	return color_final;
 	
@@ -111,32 +121,30 @@ glm::vec4 Renderer::CalculateRay(Scene *  sce, Solid3d *  Origin, Ray *  Previou
 
 void Renderer::Draw(Scene * sce)
 {
-	glm::vec4 colorBackground = sce->GetColorBackground();
+	auto colorBackground = sce->GetColorBackground() ;
 	auto camera = sce->GetCamera();
 	camera->CalculateBottomLeftPixel(_Width, _Height);
 	std::map<Ray, Solid3d *>  rayHitMap; // prealoué les ray ? 
 	auto width = _Width;
 	auto heigh = _Height;
-	
+	glm::vec4 color;
 
 	for (auto j = 0; j < _Height; j++)
 	{
 		for (auto i = 0; i < _Width; i++)
-		{	
+		{
 			glm::vec4 color = colorBackground;
-			int level = 0;
 			auto dir = camera->CalculateRayDir(i, j);
-			unsigned char* tmp = _RenderBuffer;
 			Ray ray(dir, camera->GetPosition());
 
 			auto obj = CalculateNeareastIntersect(sce, &ray);
 
 			if (obj != nullptr) {
-				color = CalculateRay(sce, obj, &ray, level);
+				color = CalculateRay(sce, obj, &ray, 0);
+
 			}
 
 			color *= 255;
-			
 			_RenderBuffer[4 * (j * _Width + i)] = static_cast<unsigned char>(color.r);
 			_RenderBuffer[4 * (j * _Width + i) + 1] = static_cast<unsigned char>(color.g);
 			_RenderBuffer[4 * (j * _Width + i) + 2] = static_cast<unsigned char>(color.b);

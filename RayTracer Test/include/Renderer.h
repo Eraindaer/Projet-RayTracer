@@ -20,8 +20,8 @@ public:
 
 private:
 
-	glm::vec4  CalculateRay(Scene *  sce, Solid3d *  Origin, Ray *  Previous, int CurDepth);
-	glm::vec4  CalculateReflectRay(Scene *  sce, Solid3d *  Origin, Ray *  Previous, int CurDepth);
+	glm::vec4  CalculateRay(Scene *  sce, Solid3d *  Origin, Ray  * Previous, int CurDepth);
+	glm::vec4  CalculateReflectRay(Scene *  sce, Solid3d *  Origin, Ray  * Previous, int CurDepth);
 
 	Solid3d *	CalculateNeareastIntersect(Scene *  sce,  Ray  * ToTest); // Null If no Object On Trajectory
 

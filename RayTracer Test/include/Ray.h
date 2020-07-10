@@ -12,7 +12,7 @@ public :
 	inline	glm::vec3 GetStart() const { return  _Start; }
 	inline	glm::vec3 GetDirection()const { return _Direction; }
 	inline	glm::vec3 GetHit() const { return _PointHit; }
-	inline	glm::vec3 GetNormaltHit() const { return _NormalHit; }
+	inline	glm::vec3 GetNormalHit() const { return _NormalHit; }
 	inline	glm::vec3 GetInvDir() const { return _InvDirection; }
 	inline	int GetSign(int ind) const { if (ind < 3) return sign[ind]; else return sign[2]; }
 	inline	void SetHit(glm::vec3 point)  {  _PointHit = point; }

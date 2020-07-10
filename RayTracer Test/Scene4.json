@@ -46,7 +46,7 @@
 	},
 	"Camera" :
 	{
-		"Position" : [700, 0, 200],
+		"Position" : [700, 300, 200],
 		"Direction": [ 0.0, 1.0, 0.0 ],
 		"Hfov" : 0.60,
 		"Dnear" : 0.1,

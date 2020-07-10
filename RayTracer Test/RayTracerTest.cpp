@@ -1,4 +1,24 @@
-
+//****************************************************************************************************
+// Raytracer test:
+// ---------------
+//  o Welcome to the raytracing programmation test for redway3d!
+//
+//  o Please read the test description document associated to this file before starting.
+//
+//  o This source file contains an empty application skeleton for you to add your own ray-tracing code
+//    in it. It starts by reading some input parameters:
+//     - The ray-tracing depth: this is the number of recursive ray propagations that must be calculated.
+//       A ray-tracer depth of 1 means that one reflection and refraction rays must be propagated in
+//       the scene. For each of these rays, shading and shadowing calculations of the hit geometries
+//       must occur.
+//     - The image dimensions in pixels width x height.
+//
+//  o Step 1 reads input parameters.
+//  o Step 2 initialize timers and the image.
+//  o Step 2.2 is yours!
+//  o Step <3 saves the results to disk.
+//
+//****************************************************************************************************
 
 #include <stdio.h>
 #include <stdlib.h>
