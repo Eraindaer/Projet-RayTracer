@@ -46,12 +46,12 @@ glm::vec4 Renderer::CalculateReflectRay(Scene *  sce, Solid3d *  Origin, Ray  * 
 	glm::vec4 color_final;
 	Ray reflectiveRay = GetReflective(Previous->GetDirection(), Previous->GetNormalHit());
 	float angle = glm::dot(reflectiveRay.GetDirection(), Previous->GetNormalHit());
-	if ((angle < 0) || (CurDepth == 0)) {
-		color_final += Origin->GetEmissive();
-	}
-
-	else {
-		color_final += CalculateRay(sce, Origin, Previous, ++CurDepth) * Origin->GetReflective();
+	Solid3d* ptr = CalculateNeareastIntersect(sce, &reflectiveRay);
+	if (ptr != nullptr) {
+		color_final += ptr->GetMaterial(();
+		if (glm::dot(reflectiveRay.GetDirection(), reflectiveRay.GetNormalHit()) < 0) {
+			CalculateReflectRay(sce, Origin, &reflectiveRay, ++CurDepth);
+		}
 	}
 	return color_final;
 }
@@ -73,8 +73,8 @@ glm::vec4 Renderer::CalculateRay(Scene *  sce, Solid3d *  Origin, Ray  * Previou
 		///L'ensemble des solides de la scène est parcouru pour vérifier si un objet est entre la surface à vérifier et la lumière en question
 		for (auto j = 0; j < sce->GetObjectsSize(); ++j) {
 			if ((sce->GetSolidObject(j)->Hit(&lightRay)) && 
-				(sce->GetSolidObject(j) != Origin) && 
-				(glm::distance(sce->GetSolidObject(j)->GetPosition(), sce->GetLight(i)->GetPosition()) < glm::distance(sce->GetSolidObject(j)->GetPosition(), sce->GetLight(i)->GetPosition()))) {
+				(sce->GetSolidObject(j) != Origin)){/* && 
+				(glm::distance(sce->GetSolidObject(j)->GetPosition(), sce->GetLight(i)->GetPosition()) < glm::distance(sce->GetSolidObject(j)->GetPosition(), sce->GetLight(i)->GetPosition())))*/ 
 				hit = true;
 				break;
 			}	
@@ -98,14 +98,14 @@ glm::vec4 Renderer::CalculateRay(Scene *  sce, Solid3d *  Origin, Ray  * Previou
 		}
 
 
-		/*for (auto j = 0; j < sce->GetObjectsSize(); ++j) {
+		for (auto j = 0; j < sce->GetObjectsSize(); ++j) {
 			if ((sce->GetSolidObject(j) != Origin) && //Si l'objet de la scène est différent du pointeur ET
 				(sce->GetSolidObject(j)->Hit(&lightRay) == true) && //Si la lumière éclaire cet objet ET 
 				(glm::distance(lightRay.GetHit(), Previous->GetHit()) < glm::distance(Previous->GetHit(), sce->GetLight(j)->GetPosition()))) { //Si la distance entre le point d'impact du rayon et le point d'impact de la lumière est inférieure à la distance entre le point d'impact du rayon et la position de la lumière
 				lightRay.SetNormalHit(Previous->GetNormalHit());
 				Ray reflectiveRay = GetReflective(Previous->GetDirection(), Previous->GetNormalHit());
 				float angle = glm::dot(reflectiveRay.GetDirection(), Previous->GetNormalHit());
-				/*if ((angle < 0) || (CurDepth == 5)) {
+				if ((angle < 0) || (CurDepth == 5)) {
 					color_final = Origin->GetEmissive();
 				}
 
@@ -113,7 +113,7 @@ glm::vec4 Renderer::CalculateRay(Scene *  sce, Solid3d *  Origin, Ray  * Previou
 					color_final *= CalculateRay(sce, Origin, &reflectiveRay, ++CurDepth) * Origin->GetReflective();
 				}
 			}
-		}*/
+		}
 	}
 	return color_final;
 	
@@ -141,7 +141,6 @@ void Renderer::Draw(Scene * sce)
 
 			if (obj != nullptr) {
 				color = CalculateRay(sce, obj, &ray, 0);
-
 			}
 
 			color *= 255;
