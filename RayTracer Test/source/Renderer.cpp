@@ -48,7 +48,7 @@ glm::vec4 Renderer::CalculateReflectRay(Scene *  sce, Solid3d *  Origin, Ray  * 
 	float angle = glm::dot(reflectiveRay.GetDirection(), Previous->GetNormalHit());
 	Solid3d* ptr = CalculateNeareastIntersect(sce, &reflectiveRay);
 	if (ptr != nullptr) {
-		color_final += ptr->GetMaterial(();
+		color_final += ptr->GetMaterial();
 		if (glm::dot(reflectiveRay.GetDirection(), reflectiveRay.GetNormalHit()) < 0) {
 			CalculateReflectRay(sce, Origin, &reflectiveRay, ++CurDepth);
 		}
@@ -58,7 +58,7 @@ glm::vec4 Renderer::CalculateReflectRay(Scene *  sce, Solid3d *  Origin, Ray  * 
 
 glm::vec4 Renderer::CalculateRay(Scene *  sce, Solid3d *  Origin, Ray  * Previous, int CurDepth)
 {
-	///Initialisation de la couleur, du statut d'ombre, de la normale et normalisation de la normale du point d'impact
+	/*///Initialisation de la couleur, du statut d'ombre, de la normale et normalisation de la normale du point d'impact
 	glm::vec4 color_final = Origin->GetMaterial();
 	glm::vec3 normal = Previous->GetNormalHit();
 
@@ -75,7 +75,7 @@ glm::vec4 Renderer::CalculateRay(Scene *  sce, Solid3d *  Origin, Ray  * Previou
 			if ((sce->GetSolidObject(j)->Hit(&lightRay)) && 
 				(sce->GetSolidObject(j) != Origin)){/* && 
 				(glm::distance(sce->GetSolidObject(j)->GetPosition(), sce->GetLight(i)->GetPosition()) < glm::distance(sce->GetSolidObject(j)->GetPosition(), sce->GetLight(i)->GetPosition())))*/ 
-				hit = true;
+				/*hit = true;
 				break;
 			}	
 		}
@@ -115,8 +115,39 @@ glm::vec4 Renderer::CalculateRay(Scene *  sce, Solid3d *  Origin, Ray  * Previou
 			}
 		}
 	}
+	return color_final;*/
+	glm::vec4 color_final = Origin->GetMaterial();
+	glm::vec3 normal = Previous->GetNormalHit();
+	normal = glm::normalize(normal);
+	bool hit;
+
+	for (auto indLight = 0; indLight < sce->GetLightSize(); ++indLight)
+	{
+		Ray lightRay = (sce->GetLight(indLight)->GetPosition() - Previous->GetHit(), Previous->GetHit());
+
+		hit = false;
+		for (auto indObject = 0; indObject < sce->GetObjectsSize(); ++indObject) {
+			if ((sce->GetSolidObject(indObject)->Hit(&lightRay)) 
+				&& (sce->GetSolidObject(indObject) != Origin)
+				&& (glm::distance(sce->GetSolidObject(indObject)->GetPosition(), sce->GetLight(indLight)->GetPosition()) < glm::distance(Previous->GetHit(), sce->GetLight(indLight)->GetPosition()))) {
+				hit = true;
+			}
+		}
+
+		if ((hit == false) && (glm::dot(normal, lightRay.GetDirection()) <= 0)) {
+			float dist = glm::length(lightRay.GetDirection()) * glm::length(normal);
+			float coef = (1 / dist) * glm::dot(lightRay.GetDirection(), normal);
+
+			color_final.r *= coef * sce->GetLight(indLight)->GetColor().r;
+			color_final.g *= coef * sce->GetLight(indLight)->GetColor().g;
+			color_final.b *= coef * sce->GetLight(indLight)->GetColor().b;
+		}
+		else {
+			color_final *= Origin->GetEmissive();
+		}
+	}
 	return color_final;
-	
+
 }
 
 void Renderer::Draw(Scene * sce)
