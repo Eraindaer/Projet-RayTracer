@@ -49,19 +49,18 @@ glm::vec4 Renderer::CalculateReflectRay(Scene *  sce, Solid3d *  Origin, Ray  * 
 {
 	glm::vec4 color_final = { 0, 0, 0, 0 };
 	Ray reflectRay(GetReflective(Previous->GetDirection(), Previous->GetNormalHit()), Previous->GetHit());
-	//Solid3d* obj = CalculateNeareastIntersect(sce, &reflectRay);
 	Solid3d* obj = nullptr;
 	float angle = (glm::dot(reflectRay.GetDirection(), Previous->GetNormalHit())) > 0 ? glm::dot(reflectRay.GetDirection(), Previous->GetNormalHit()) : 0;
 	for (auto indObject = 0; indObject < sce->GetObjectsSize(); indObject++) {
 		if ((angle != 0) && (sce->GetSolidObject(indObject) != Origin) && (sce->GetSolidObject(indObject)->Hit(&reflectRay)))
 		{
 				obj = sce->GetSolidObject(indObject);
-				color_final.r += CalculateRay(sce, sce->GetSolidObject(indObject), &reflectRay, 0).r * Origin->GetReflective().r*0.5f;
-				color_final.g += CalculateRay(sce, sce->GetSolidObject(indObject), &reflectRay, 0).g * Origin->GetReflective().g*0.5f;
-				color_final.b += CalculateRay(sce, sce->GetSolidObject(indObject), &reflectRay, 0).b * Origin->GetReflective().b*0.5f;
+				color_final.r += CalculateRay(sce, obj, &reflectRay, 0).r * Origin->GetReflective().r*0.5f;
+				color_final.g += CalculateRay(sce, obj, &reflectRay, 0).g * Origin->GetReflective().g*0.5f;
+				color_final.b += CalculateRay(sce, obj, &reflectRay, 0).b * Origin->GetReflective().b*0.5f;
 		}
 	}
-	if (CurDepth >= 0) {
+	if (CurDepth > 0) {
 		color_final += CalculateReflectRay(sce, obj, &reflectRay, --CurDepth);
 	}
 	return color_final;
@@ -95,13 +94,7 @@ glm::vec4 Renderer::CalculateRay(Scene *  sce, Solid3d *  Origin, Ray  * Previou
 			color_final.b += Origin->GetMaterial().b * coef * sce->GetLight(indLight)->GetColor().b;
 		}
 	}
-	
-	if (color_final.r > 1.0) color_final.r = 1.0;
-	if (color_final.g > 1.0) color_final.g = 1.0;
-	if (color_final.b > 1.0) color_final.b = 1.0;
-	
 	return color_final;
-
 }
 
 void Renderer::Draw(Scene * sce)
@@ -112,26 +105,28 @@ void Renderer::Draw(Scene * sce)
 	std::map<Ray, Solid3d *>  rayHitMap; // prealoué les ray ? 
 	auto width = _Width;
 	auto heigh = _Height;
-	glm::vec4 color;
+	
 
 	for (auto j = 0; j < _Height; j++)
 	{
 		for (auto i = 0; i < _Width; i++)
 		{
 			glm::vec4 color = colorBackground;
+			int depth = 3;
 			auto dir = camera->CalculateRayDir(i, j);
 			Ray ray(dir, camera->GetPosition());
-
+	
 			auto obj = CalculateNeareastIntersect(sce, &ray);
 
 			if (obj != nullptr) {
 				color = CalculateRay(sce, obj, &ray, 0) * 0.8f;
-				color += CalculateReflectRay(sce, obj, &ray, 0);
+				color += CalculateReflectRay(sce, obj, &ray, --depth);
 			}
 			if (color.r > 1.0) color.r = 1.0;
 			if (color.g > 1.0) color.g = 1.0;
 			if (color.b > 1.0) color.b = 1.0;
 			color *= 255;
+
 			_RenderBuffer[4 * (j * _Width + i)] = static_cast<unsigned char>(color.r);
 			_RenderBuffer[4 * (j * _Width + i) + 1] = static_cast<unsigned char>(color.g);
 			_RenderBuffer[4 * (j * _Width + i) + 2] = static_cast<unsigned char>(color.b);
