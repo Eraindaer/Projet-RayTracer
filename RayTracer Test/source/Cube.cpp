@@ -49,28 +49,27 @@ bool Cube::Hit(Ray * RayToTest) // raw code à refaire
 		tmin = tzmin;
 	if (tzmax < tmax)
 		tmax = tzmax;
-
-	/*if (glm::abs(RayToTest->GetHit().z - _Min.z) < 10e-12)
-		RayToTest->SetNormalHit(glm::vec3(0, 0, -1));
-	else if (glm::abs(RayToTest->GetHit().y - _Min.y) < 10e-12)
-		RayToTest->SetNormalHit(glm::vec3(0, -1, 0));
-	else if (glm::abs(RayToTest->GetHit().x - _Min.x) < 10e-12)
-		RayToTest->SetNormalHit(glm::vec3(-1, 0, 0));
-	else if (glm::abs(RayToTest->GetHit().z - _Min.z) > 10e-12)
-		RayToTest->SetNormalHit(glm::vec3(0, 0, 1));
-	else if (glm::abs(RayToTest->GetHit().y - _Min.y) > 10e-12)
-		RayToTest->SetNormalHit(glm::vec3(0, 1, 0));
-	else if (glm::abs(RayToTest->GetHit().x - _Min.x) > 10e-12)
-		RayToTest->SetNormalHit(glm::vec3(1, 0, 0));*/
-
 	RayToTest->SetHit(RayToTest->GetStart() + tmin * RayToTest->GetDirection());
 
+	if (glm::abs(RayToTest->GetHit().z - _Min.z) < 10e-3)
+		RayToTest->SetNormalHit(glm::vec3(0, 0, -1));
+	else if (glm::abs(RayToTest->GetHit().y - _Min.y) < 10e-3)
+		RayToTest->SetNormalHit(glm::vec3(0, -1, 0));
+	else if (glm::abs(RayToTest->GetHit().x - _Min.x) < 10e-3)
+		RayToTest->SetNormalHit(glm::vec3(-1, 0, 0));
+	else if (glm::abs(RayToTest->GetHit().z - _Max.z) < 10e-3)
+		RayToTest->SetNormalHit(glm::vec3(0, 0, 1));
+	else if (glm::abs(RayToTest->GetHit().y - _Max.y) < 10e-3)
+		RayToTest->SetNormalHit(glm::vec3(0, 1, 0));
+	else if (glm::abs(RayToTest->GetHit().x - _Max.x) < 10e-3)
+		RayToTest->SetNormalHit(glm::vec3(1, 0, 0));
+		
 	return true;
 }
 
 void  Cube::CalculNormal()
 {
-	
+	Cube::SetPosition(glm::vec3{ _Min.x, _Max.y, _Max.z });
 }
 
 bool Cube::Parse(rapidjson::GenericMember<rapidjson::UTF8<>, rapidjson::MemoryPoolAllocator<>>& toParse)

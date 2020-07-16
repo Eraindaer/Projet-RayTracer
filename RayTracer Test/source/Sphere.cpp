@@ -45,6 +45,7 @@ bool Sphere::Hit(Ray *  ray)
 	}
 
 	ray->SetHit(ray->GetStart() + t0 * ray->GetDirection());
+	ray->SetNormalHit(ray->GetHit() - Sphere::GetPosition());
 	return true;
 }
 

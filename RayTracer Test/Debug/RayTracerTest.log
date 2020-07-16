@@ -1,22 +1,2 @@
-﻿  Renderer.cpp
-f:\projet raytracer\raytracertest\source\renderer.cpp(161): warning C4101: 'color' : variable locale non référencée
-f:\projet raytracer\glm-master\glm\detail\type_vec4.inl(583): warning C4244: 'argument' : conversion de 'U' en 'T', perte possible de données
-          with
-          [
-              U=int
-          ]
-          and
-          [
-              T=float
-          ]
-  f:\projet raytracer\raytracertest\source\renderer.cpp(177): note: voir la référence à l'instanciation de la fonction modèle 'glm::vec<4,float,0> &glm::vec<4,float,0>::operator *=<int>(U)' en cours de compilation
-          with
-          [
-              U=int
-          ]
-  f:\projet raytracer\raytracertest\source\renderer.cpp(177): note: voir la référence à l'instanciation de la fonction modèle 'glm::vec<4,float,0> &glm::vec<4,float,0>::operator *=<int>(U)' en cours de compilation
-          with
-          [
-              U=int
-          ]
+﻿  Cube.cpp
   RayTracerTest.vcxproj -> F:\Projet RayTracer\RayTracerTest\Debug\RayTracerTest.exe
